@@ -207,6 +207,7 @@
 
             <button class="download" onclick="downloadPNG()">PNGダウンロード</button>
             <button class="download" onclick="downloadJPG()">JPGダウンロード</button>
+            <button class="download" onclick="downloadSVG()">SVGダウンロード</button>
         </div>
 
         <div class="canvas-container">
@@ -410,6 +411,31 @@
             link.download = 'pixel-art.jpg';
             link.href = exportCanvas.toDataURL('image/jpeg', 0.9);
             link.click();
+        }
+
+        function downloadSVG() {
+            const width = parseInt(document.getElementById('canvasWidth').value);
+            const height = parseInt(document.getElementById('canvasHeight').value);
+            const scale = parseInt(document.getElementById('exportScale').value);
+
+            let svgContent = `<svg xmlns="http://www.w3.org/2000/svg" width="${width * scale}" height="${height * scale}" viewBox="0 0 ${width * scale} ${height * scale}">`;
+            
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x++) {
+                    if (pixelData[y][x] !== 'transparent') {
+                        svgContent += `<rect x="${x * scale}" y="${y * scale}" width="${scale}" height="${scale}" fill="${pixelData[y][x]}"/>`;
+                    }
+                }
+            }
+            
+            svgContent += '</svg>';
+
+            const blob = new Blob([svgContent], { type: 'image/svg+xml' });
+            const link = document.createElement('a');
+            link.download = 'pixel-art.svg';
+            link.href = URL.createObjectURL(blob);
+            link.click();
+            URL.revokeObjectURL(link.href);
         }
 
         window.onload = initCanvas;
